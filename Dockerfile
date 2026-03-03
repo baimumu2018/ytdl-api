@@ -1,6 +1,8 @@
 FROM python:3.11-slim
+LABEL "language"="python"
+LABEL "framework"="flask"
 
-# 安装ffmpeg（音频转码必需）
+# 安装 ffmpeg
 RUN apt-get update && apt-get install -y ffmpeg && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -10,6 +12,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY app.py .
 
-EXPOSE 8080
+EXPOSE 5000
 
-CMD ["gunicorn", "--bind", "0.0.0.0:8080", "--timeout", "300", "app:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "4", "--worker-class", "sync", "--timeout", "300", "--access-logfile", "-", "--error-logfile", "-", "app:app"]
